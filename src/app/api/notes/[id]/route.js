@@ -21,6 +21,12 @@ export async function GET(req, { params }) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    await db.collection("notes").updateOne(
+      { _id: new ObjectId(noteId) },
+      { $inc: { views: 1 } }
+    );
+    note.views = (note.views || 0) + 1; 
+
     return NextResponse.json({ note }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
