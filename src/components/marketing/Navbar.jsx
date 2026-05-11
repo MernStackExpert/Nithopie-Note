@@ -19,8 +19,15 @@ export default function Navbar({ isLoggedIn, user }) {
   ];
 
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.refresh();
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" });
+      if (res.ok) {
+        setDropdownOpen(false);
+        window.location.href = "/login";
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -76,10 +83,10 @@ export default function Navbar({ isLoggedIn, user }) {
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="w-10 h-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-800 hover:ring-blue-500 dark:hover:ring-blue-500 transition-all duration-300 overflow-hidden flex items-center justify-center focus:outline-none"
+                  className="w-10 h-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-800 hover:ring-blue-500 dark:hover:ring-blue-500 transition-all duration-300 overflow-hidden flex items-center justify-center focus:outline-none cursor-pointer"
                 >
-                  {user?.image ? (
-                    <img src={user.image} alt="Profile" className="w-full h-full object-cover" />
+                  {user?.img ? (
+                    <img src={user.img} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
                       <User className="w-5 h-5 text-white" />
@@ -104,11 +111,8 @@ export default function Navbar({ isLoggedIn, user }) {
                         Dashboard
                       </Link>
                       <button
-                        onClick={() => {
-                          setDropdownOpen(false);
-                          handleLogout();
-                        }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left"
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left cursor-pointer"
                       >
                         <LogOut className="w-4 h-4" />
                         Logout

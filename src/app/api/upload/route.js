@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
-import { getSession } from "@/lib/session";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,17 +9,17 @@ cloudinary.config({
 
 export async function POST(req) {
   try {
-    const session = await getSession();
-    if (!session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+    console.log("--- Upload API Called ---"); 
+    
     const formData = await req.formData();
     const file = formData.get("file");
 
     if (!file) {
+      console.log("Error: No file found in request"); 
       return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
     }
+
+    console.log(`File received: ${file.name}, Size: ${file.size}`);
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -29,8 +28,13 @@ export async function POST(req) {
       const uploadStream = cloudinary.uploader.upload_stream(
         { folder: "notebook_uploads" },
         (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
+          if (error) {
+            console.error("Cloudinary Error:", error); 
+            reject(error);
+          } else {
+            console.log("Upload Success! URL:", result.secure_url); 
+            resolve(result);
+          }
         }
       );
       uploadStream.end(buffer);
@@ -38,6 +42,7 @@ export async function POST(req) {
 
     return NextResponse.json({ url: uploadResult.secure_url }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    console.error("API Route Error:", error);
+    return NextResponse.json({ error: "Upload failed: " + error.message }, { status: 500 });
   }
 }

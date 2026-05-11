@@ -10,12 +10,18 @@ export async function POST(req) {
 
     const user = await db.collection("users").findOne({ email });
     if (!user) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 },
+      );
     }
 
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 },
+      );
     }
 
     const session = await getSession();
@@ -23,11 +29,16 @@ export async function POST(req) {
       id: user._id.toString(),
       name: user.name,
       email: user.email,
+      img: user.img,
+      scCode: user.scCode,
     };
     await session.save();
 
     return NextResponse.json({ message: "Login successful" }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }

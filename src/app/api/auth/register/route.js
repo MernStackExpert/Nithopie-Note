@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password , img , scCode} = await req.json();
     const db = await getDb();
 
     const existingUser = await db.collection("users").findOne({ email });
@@ -17,6 +17,8 @@ export async function POST(req) {
     await db.collection("users").insertOne({
       name,
       email,
+      img,
+      scCode,
       password: hashedPassword,
       createdAt: new Date(),
     });
