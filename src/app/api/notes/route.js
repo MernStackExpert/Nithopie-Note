@@ -37,6 +37,7 @@ export async function POST(req) {
       tags: tags || [],
       color: color || "default",
       isPinned: isPinned || false,
+      isTrashed: false,
       views: 0,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -63,10 +64,21 @@ export async function GET(req) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const url = new URL(req.url);
+    const isTrash = url.searchParams.get("trash") === "true";
+
     const db = await getDb();
+    const query = { userId: session.user.id };
+
+    if (isTrash) {
+      query.isTrashed = true;
+    } else {
+      query.isTrashed = { $ne: true };
+    }
+
     const notes = await db
       .collection("notes")
-      .find({ userId: session.user.id })
+      .find(query)
       .sort({ isPinned: -1, updatedAt: -1 })
       .toArray();
 

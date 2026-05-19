@@ -1,14 +1,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { ShieldCheck, Bell, Search } from "lucide-react";
+import { ShieldCheck, Bell, Search, Menu } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function TopNav({ user }) {
   const pathname = usePathname();
   
   const generateBreadcrumbs = () => {
-    if (pathname === "/dashboard") return "Overview";
+    if (pathname === "/work-space") return "Overview";
     if (pathname.includes("/notes/")) return "Editing Note";
     if (pathname.includes("/favorites")) return "Favorites";
     if (pathname.includes("/settings")) return "Settings";
@@ -16,8 +16,14 @@ export default function TopNav({ user }) {
   };
 
   return (
-    <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-xl flex items-center justify-between px-6 sticky top-0 z-30">
-      <div className="flex items-center gap-4">
+    <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-[#0D1117]/50 backdrop-blur-xl flex items-center justify-between px-4 md:px-6 sticky top-0 z-30">
+      <div className="flex items-center gap-3 md:gap-4">
+        <button 
+          onClick={() => window.dispatchEvent(new Event("toggle-mobile-menu"))}
+          className="md:hidden p-2 -ml-2 text-gray-500 hover:text-gray-900 dark:hover:text-white"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
         <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 capitalize">
           {generateBreadcrumbs()}
         </h2>
@@ -27,7 +33,7 @@ export default function TopNav({ user }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 md:gap-4">
         <div className="hidden md:flex relative group">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
           <input 
@@ -42,7 +48,7 @@ export default function TopNav({ user }) {
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full border-2 border-white dark:border-[#0D1117]"></span>
         </button>
 
-        <div className="w-px h-6 bg-gray-300 dark:bg-gray-700 mx-1"></div>
+        <div className="hidden md:block w-px h-6 bg-gray-300 dark:bg-gray-700 mx-1"></div>
         
         <ThemeToggle />
       </div>

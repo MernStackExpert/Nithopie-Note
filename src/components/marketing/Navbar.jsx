@@ -3,7 +3,17 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { FileText, Home, Info, Mail, HelpCircle, LayoutDashboard, LogOut, User, Zap } from "lucide-react";
+import {
+  FileText,
+  Home,
+  Info,
+  Mail,
+  HelpCircle,
+  LayoutDashboard,
+  LogOut,
+  User,
+  Zap,
+} from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Navbar({ isLoggedIn, user }) {
@@ -13,7 +23,11 @@ export default function Navbar({ isLoggedIn, user }) {
 
   const navLinks = [
     { name: "Home", href: "/", icon: <Home className="w-4 h-4" /> },
-    { name: "How it Works", href: "/how-it-works", icon: <HelpCircle className="w-4 h-4" /> },
+    {
+      name: "How it Works",
+      href: "/how-it-works",
+      icon: <HelpCircle className="w-4 h-4" />,
+    },
     { name: "About", href: "/about", icon: <Info className="w-4 h-4" /> },
     { name: "Contact", href: "/contact", icon: <Mail className="w-4 h-4" /> },
   ];
@@ -63,9 +77,9 @@ export default function Navbar({ isLoggedIn, user }) {
             })}
             {isLoggedIn && (
               <Link
-                href="/dashboard"
+                href="/work-space"
                 className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-full transition-all duration-300 ${
-                  pathname.startsWith("/dashboard")
+                  pathname.startsWith("/work-space")
                     ? "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm"
                     : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200/50 dark:hover:bg-gray-800/50"
                 }`}
@@ -78,7 +92,7 @@ export default function Navbar({ isLoggedIn, user }) {
 
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            
+
             {isLoggedIn ? (
               <div className="relative">
                 <button
@@ -86,7 +100,11 @@ export default function Navbar({ isLoggedIn, user }) {
                   className="w-10 h-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-800 hover:ring-blue-500 dark:hover:ring-blue-500 transition-all duration-300 overflow-hidden flex items-center justify-center focus:outline-none cursor-pointer"
                 >
                   {user?.img ? (
-                    <img src={user.img} alt="Profile" className="w-full h-full object-cover" />
+                    <img
+                      src={user.img}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center">
                       <User className="w-5 h-5 text-white" />
@@ -96,14 +114,21 @@ export default function Navbar({ isLoggedIn, user }) {
 
                 {dropdownOpen && (
                   <>
-                    <div className="fixed inset-0 z-40" onClick={() => setDropdownOpen(false)}></div>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setDropdownOpen(false)}
+                    ></div>
                     <div className="absolute right-0 mt-3 w-56 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-2xl shadow-2xl py-2 z-50 transform origin-top-right transition-all">
                       <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800 mb-1">
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{user?.name || "User"}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email || "user@example.com"}</p>
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                          {user?.name || "User"}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {user?.email || "user@example.com"}
+                        </p>
                       </div>
                       <Link
-                        href="/dashboard"
+                        href="/work-space"
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                       >
@@ -123,8 +148,8 @@ export default function Navbar({ isLoggedIn, user }) {
               </div>
             ) : (
               <div className="hidden sm:flex items-center gap-3">
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-full transition-all duration-300"
                 >
                   <User className="w-4 h-4" />
@@ -152,7 +177,9 @@ export default function Navbar({ isLoggedIn, user }) {
                 key={link.name}
                 href={link.href}
                 className={`relative flex flex-col items-center justify-center w-full py-2 space-y-1 rounded-xl transition-all duration-300 ${
-                  isActive ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  isActive
+                    ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
                 {link.icon}
@@ -164,7 +191,9 @@ export default function Navbar({ isLoggedIn, user }) {
             <Link
               href="/login"
               className={`relative flex flex-col items-center justify-center w-full py-2 space-y-1 rounded-xl transition-all duration-300 ${
-                pathname === "/login" ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20" : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                pathname === "/login"
+                  ? "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
               <User className="w-4 h-4" />

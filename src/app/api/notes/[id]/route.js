@@ -5,24 +5,24 @@ import { ObjectId } from "mongodb";
 
 export async function GET(req, { params }) {
   try {
+    const { id } = await params; 
+    
     const db = await getDb();
-    const noteId = params.id;
-
-    const note = await db.collection("notes").findOne({ _id: new ObjectId(noteId) });
+    const note = await db.collection("notes").findOne({ _id: new ObjectId(id) });
 
     if (!note) {
       return NextResponse.json({ error: "Note not found" }, { status: 404 });
     }
 
     const session = await getSession();
-    const isOwner = session.user && session.user.id === note.userId;
+    const isOwner = session.user && String(session.user.id) === String(note.userId);
 
     if (note.isPrivate && !isOwner) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     await db.collection("notes").updateOne(
-      { _id: new ObjectId(noteId) },
+      { _id: new ObjectId(id) },
       { $inc: { views: 1 } }
     );
     note.views = (note.views || 0) + 1; 
@@ -35,6 +35,7 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
   try {
+    const { id } = await params;
     const session = await getSession();
     if (!session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -42,14 +43,10 @@ export async function PUT(req, { params }) {
 
     const body = await req.json();
     const db = await getDb();
-    const noteId = params.id;
 
-    const existingNote = await db.collection("notes").findOne({
-      _id: new ObjectId(noteId),
-      userId: session.user.id
-    });
+    const existingNote = await db.collection("notes").findOne({ _id: new ObjectId(id) });
 
-    if (!existingNote) {
+    if (!existingNote || String(existingNote.userId) !== String(session.user.id)) {
       return NextResponse.json({ error: "Note not found or unauthorized" }, { status: 404 });
     }
 
@@ -66,7 +63,7 @@ export async function PUT(req, { params }) {
     };
 
     await db.collection("notes").updateOne(
-      { _id: new ObjectId(noteId) },
+      { _id: new ObjectId(id) },
       { $set: updateData }
     );
 
@@ -78,22 +75,20 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    const { id } = await params;
     const session = await getSession();
     if (!session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const db = await getDb();
-    const noteId = params.id;
+    const note = await db.collection("notes").findOne({ _id: new ObjectId(id) });
 
-    const result = await db.collection("notes").deleteOne({
-      _id: new ObjectId(noteId),
-      userId: session.user.id
-    });
-
-    if (result.deletedCount === 0) {
+    if (!note || String(note.userId) !== String(session.user.id)) {
       return NextResponse.json({ error: "Note not found or unauthorized" }, { status: 404 });
     }
+
+    await db.collection("notes").deleteOne({ _id: new ObjectId(id) });
 
     return NextResponse.json({ message: "Note deleted" }, { status: 200 });
   } catch (error) {
